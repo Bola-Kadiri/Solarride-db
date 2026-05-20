@@ -2,11 +2,19 @@ spring:
   application:
     name: solarride
 
+  threads:
+    virtual:
+      enabled: true
+
   datasource:
-    url: jdbc:postgresql://localhost:5434/solarride
-    username: solarride_user
-    password: 123456
+    url: ${DB_URL:jdbc:postgresql://localhost:5434/solarride}
+    username: ${DB_USERNAME:solarride_user}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
 
   jpa:
     hibernate:
@@ -14,6 +22,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+    open-in-view: false
     show-sql: false
 
   flyway:
@@ -23,21 +34,92 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 10
+          min-idle: 2
 
   quartz:
     job-store-type: jdbc
     jdbc:
       initialize-schema: always
+    properties:
+      org.quartz.jobStore.isClustered: true
+      org.quartz.jobStore.clusterCheckinInterval: 10000
+      org.quartz.threadPool.threadCount: 10
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000
 
 server:
-  port: 8080
+  port: ${PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-ttl-minutes: ${JWT_ACCESS_TTL_MINUTES:15}
+  refresh-ttl-days: ${JWT_REFRESH_TTL_DAYS:30}
+
+flutterwave:
+  public-key: ${FLUTTERWAVE_PUBLIC_KEY:}
+  secret-key: ${FLUTTERWAVE_SECRET_KEY:}
+  secret-hash: ${FLUTTERWAVE_SECRET_HASH:}
+  base-url: ${FLUTTERWAVE_BASE_URL:https://api.flutterwave.com/v3}
+
+termii:
+  api-key: ${TERMII_API_KEY:}
+  sender-id: ${TERMII_SENDER_ID:SolarRide}
+  base-url: ${TERMII_BASE_URL:https://api.ng.termii.com}
+
+firebase:
+  project-id: ${FIREBASE_PROJECT_ID:}
+  service-account-json: ${FIREBASE_SERVICE_ACCOUNT_JSON:}
+
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID:}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY:}
+  region: ${AWS_REGION:af-south-1}
+  s3:
+    bucket: ${AWS_S3_BUCKET:solarride-documents}
+
+google:
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:}
+
+sentry:
+  dsn: ${SENTRY_DSN:}
+  traces-sample-rate: 0.1
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
 logging:
   level:
-    com.solarride: INFO
+    com.solarride.solarride: INFO
+    org.hibernate.SQL: WARN
+    org.springframework.security: WARN
