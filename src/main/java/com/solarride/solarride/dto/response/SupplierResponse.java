@@ -9,6 +9,7 @@ public record SupplierResponse(
         String email,
         String companyName,
         String repName,
+        String shopAddress,
         String status,
         BigDecimal averageRating
 ) {}

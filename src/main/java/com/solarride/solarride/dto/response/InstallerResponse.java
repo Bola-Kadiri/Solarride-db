@@ -9,6 +9,7 @@ public record InstallerResponse(
         String email,
         String fullName,
         String companyName,
+        String shopAddress,
         String badge,
         String status,
         BigDecimal averageRating,

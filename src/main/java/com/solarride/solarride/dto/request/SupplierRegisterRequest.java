@@ -27,6 +27,9 @@ public record SupplierRegisterRequest(
         String registrationNumber,
         String taxId,
 
+        @NotBlank
+        String shopAddress,
+
         @Min(1)
         Integer deliveryLeadTimeDays,
 

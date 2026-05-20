@@ -25,11 +25,11 @@ public record InstallerRegisterRequest(
         String cacNumber,
         String taxId,
 
+        @NotBlank
+        String shopAddress,
+
         Double latitude,
         Double longitude,
-
-        @Min(1) @Max(500)
-        Integer serviceRadiusKm,
 
         @AssertTrue(message = "You must accept the SLA terms")
         boolean slaAccepted

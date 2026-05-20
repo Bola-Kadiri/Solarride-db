@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +65,7 @@ public class InstallerOnboardingService {
         installer.setCompanyName(request.companyName());
         installer.setCacNumber(request.cacNumber());
         installer.setTaxId(request.taxId());
+        installer.setShopAddress(request.shopAddress());
         installer.setBadge(InstallerBadge.NEW_INSTALLER);
         installer.setSlaAccepted(request.slaAccepted());
         if (request.slaAccepted()) {
@@ -73,10 +75,6 @@ public class InstallerOnboardingService {
         if (request.latitude() != null && request.longitude() != null) {
             Point point = GF.createPoint(new Coordinate(request.longitude(), request.latitude()));
             installer.setLocation(point);
-        }
-
-        if (request.serviceRadiusKm() != null) {
-            installer.setServiceRadiusKm(request.serviceRadiusKm());
         }
 
         installer = installerRepository.save(installer);
@@ -129,12 +127,15 @@ public class InstallerOnboardingService {
         return toResponse(installer);
     }
 
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('INSTALLER') or hasRole('ADMIN')")
     public InstallerResponse getProfile(UUID userId) {
         Installer installer = installerRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Installer profile not found"));
         return toResponse(installer);
     }
 
+    @Transactional(readOnly = true)
     public InstallerResponse getProfileByInstallerId(UUID installerId) {
         Installer installer = installerRepository.findById(installerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Installer", installerId));
@@ -158,6 +159,7 @@ public class InstallerOnboardingService {
                 user.getEmail(),
                 user.getFirstName() + " " + user.getLastName(),
                 installer.getCompanyName(),
+                installer.getShopAddress(),
                 installer.getBadge().name(),
                 user.getStatus().name(),
                 installer.getAverageRating(),

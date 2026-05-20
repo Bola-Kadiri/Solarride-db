@@ -37,6 +37,9 @@ public class Installer extends BaseEntity {
     @Column(name = "tax_id")
     private String taxId;
 
+    @Column(name = "shop_address", columnDefinition = "TEXT")
+    private String shopAddress;
+
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point location;
 

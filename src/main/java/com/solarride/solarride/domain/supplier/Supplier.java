@@ -39,6 +39,9 @@ public class Supplier extends BaseEntity {
     @Column(name = "rep_name")
     private String repName;
 
+    @Column(name = "shop_address", columnDefinition = "TEXT")
+    private String shopAddress;
+
     @Column(name = "coverage_area", columnDefinition = "geometry(Geometry, 4326)")
     private Geometry coverageArea;
 

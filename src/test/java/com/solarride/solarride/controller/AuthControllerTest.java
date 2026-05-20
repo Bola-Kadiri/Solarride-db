@@ -48,7 +48,7 @@ class AuthControllerTest {
 
         UserResponse resp = new UserResponse(
                 UUID.randomUUID(), "test@example.com", "+2348012345678",
-                "John", "Doe", "CUSTOMER", "ACTIVE", false, false);
+                "John", "Doe", "CUSTOMER", "ACTIVE", false, false, null);
 
         when(customerOnboardingService.register(any())).thenReturn(resp);
 

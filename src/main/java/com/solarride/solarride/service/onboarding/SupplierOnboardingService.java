@@ -15,6 +15,7 @@ import com.solarride.solarride.repository.UserRepository;
 import com.solarride.solarride.service.storage.S3StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,7 @@ public class SupplierOnboardingService {
         supplier.setRegistrationNumber(request.registrationNumber());
         supplier.setTaxId(request.taxId());
         supplier.setRepName(request.repFirstName() + " " + request.repLastName());
+        supplier.setShopAddress(request.shopAddress());
         supplier.setDeliveryLeadTimeDays(request.deliveryLeadTimeDays());
         supplier.setSlaAccepted(request.slaAccepted());
         if (request.slaAccepted()) {
@@ -122,6 +124,8 @@ public class SupplierOnboardingService {
         return toResponse(supplier);
     }
 
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('SUPPLIER') or hasRole('ADMIN')")
     public SupplierResponse getProfile(UUID userId) {
         Supplier supplier = supplierRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier profile not found"));
@@ -136,6 +140,7 @@ public class SupplierOnboardingService {
                 user.getEmail(),
                 supplier.getCompanyName(),
                 supplier.getRepName(),
+                supplier.getShopAddress(),
                 user.getStatus().name(),
                 supplier.getAverageRating());
     }

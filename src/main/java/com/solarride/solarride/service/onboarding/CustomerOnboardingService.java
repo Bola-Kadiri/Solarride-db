@@ -41,6 +41,7 @@ public class CustomerOnboardingService {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setRole(Role.CUSTOMER);
         user.setStatus(UserStatus.ACTIVE);
+        user.setHomeAddress(request.homeAddress());
 
         user = userRepository.save(user);
         log.info("Customer registered: {}", user.getId());
@@ -74,6 +75,7 @@ public class CustomerOnboardingService {
                 user.getRole().name(),
                 user.getStatus().name(),
                 user.isEmailVerified(),
-                user.isPhoneVerified());
+                user.isPhoneVerified(),
+                user.getHomeAddress());
     }
 }

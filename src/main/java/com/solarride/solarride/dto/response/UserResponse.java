@@ -11,5 +11,6 @@ public record UserResponse(
         String role,
         String status,
         boolean emailVerified,
-        boolean phoneVerified
+        boolean phoneVerified,
+        String homeAddress
 ) {}

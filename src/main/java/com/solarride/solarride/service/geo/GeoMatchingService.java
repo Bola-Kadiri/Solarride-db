@@ -54,6 +54,7 @@ public class GeoMatchingService {
                 user.getEmail(),
                 user.getFirstName() + " " + user.getLastName(),
                 installer.getCompanyName(),
+                installer.getShopAddress(),
                 installer.getBadge().name(),
                 user.getStatus().name(),
                 installer.getAverageRating(),

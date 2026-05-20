@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Fires every 10 minutes. Detects quotes that breached their 24-hour SLA
@@ -29,8 +28,6 @@ public class SlaMonitorJob implements Job {
     @Transactional
     public void execute(JobExecutionContext context) {
         Instant now = Instant.now();
-        var overdueQuotes = quoteRepository.findByJobIdAndStatus(null, QuoteStatus.REQUESTED);
-        // Use dedicated query instead — see findOverdueRequestedQuotes below
         var expired = quoteRepository.findOverdueRequestedQuotes(now);
         if (expired.isEmpty()) return;
 
@@ -38,7 +35,6 @@ public class SlaMonitorJob implements Job {
         for (var quote : expired) {
             quote.setStatus(QuoteStatus.EXPIRED);
             quoteRepository.save(quote);
-            UUID adminId = null; // notified via event type
             notificationOrchestrator.notify(
                     quote.getInstaller().getUser().getId(),
                     "SLA_BREACH_QUOTE",

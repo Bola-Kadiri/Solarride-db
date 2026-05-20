@@ -50,6 +50,9 @@ public class User extends BaseEntity {
     @Column(name = "fcm_token")
     private String fcmToken;
 
+    @Column(name = "home_address", columnDefinition = "TEXT")
+    private String homeAddress;
+
     @Column(name = "deleted_at")
     private Instant deletedAt;
 }
